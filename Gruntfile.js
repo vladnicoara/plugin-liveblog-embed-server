@@ -45,7 +45,7 @@ module.exports = function(grunt) {
     grunt.registerTask('server', 'Start the liveblog embed server', function(target, action, server) {
         // default option configuration.
         grunt.option.init({
-            target: 'dev',
+            target: 'devie',
             action: 'start',
             server: 'liveblog'
         });
@@ -63,6 +63,9 @@ module.exports = function(grunt) {
         switch (target) {
             case 'dev':
                 grunt.task.run(['env:dev', 'express:dev', 'open:dev', 'watch:express']);
+                break;
+            case 'devie':
+                grunt.task.run(['env:dev', 'express:devie', 'open:dev', 'watch:expressie']);
                 break;
             case 'prod':
                 grunt.task.run(['env:prod', 'express:prod']);

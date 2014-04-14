@@ -8,6 +8,11 @@ module.exports = {
             livereload: true
         }
     },
+    devie: {
+        options: {
+            //livereload: true
+        }
+    },
     prod: {
         options: {
             background: false

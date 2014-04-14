@@ -10,6 +10,10 @@ module.exports = {
             spawn: false
         }
     },
+    expressie: {
+        files: ['<%= dir.script  %>/**/*.js', '<%= dir.theme %>/**/*.js', '<%= dir.theme %>/**/*.dust'],
+        tasks: ['express:devie']
+    },
     'check-own': {
         files: ['<%= jshint.own.src %>'],
         tasks: ['jshint:own', 'jscs:own']

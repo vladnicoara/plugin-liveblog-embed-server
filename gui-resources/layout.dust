@@ -13,7 +13,6 @@
   <body>
     {+embedCode}{/embedCode}
     {+layout}{/layout}
-    <script src="//localhost:35729/livereload.js"></script>
   </body>
 </html>
 {:else}
