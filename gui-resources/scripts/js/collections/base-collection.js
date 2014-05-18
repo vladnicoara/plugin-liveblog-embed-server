@@ -39,6 +39,12 @@ define([
         // Request for updates on collection
         // Set update params in this.syncParams.updates
         fetchUpdates: function(options) {
+            // options.success = function(coll) {
+            //     console.log('coll from updates ', coll);
+            //     coll.each(function(model){
+            //         model.set('fromUpdates ', true);
+            //     });
+            // }
             options         = options || {};
             var updatesOpts = this.syncParams.updates || {};
             options.data    = _.extend(updatesOpts, options.data);

@@ -26,11 +26,13 @@ define([
                 return '[' + this.postRootDataAttr + ']';
             }
         },
-
         flags: {
-            autoRender: true
+            autoRender: true,
+            //if true the items will not be displayed imediately
+            addPending: true
         },
-
+        //keeps count of how many currently pending items
+        pendingCounter: 0,
         initialize: function() {
             utils.dispatcher.trigger('initialize.posts-view', this);
             _.bindAll(this, 'insertPostView', 'orderViews', '_postViewIndex',
@@ -105,12 +107,41 @@ define([
                 this.collection.remove(post);
             }
         },
-
+        countPending: function() {
+            var tempCounter = 0;
+            this.collection.each(function(item){
+                if (item.get('pending')) {
+                    tempCounter ++;
+                }
+            });
+            return tempCounter;
+        },
+        renderPending: function() {
+            var view = this;
+            console.log('render pending function');
+            this.collection.each(function(item){
+                if (item.get('pending')) {
+                    console.log('rendering pending item ', item);
+                    view.addPost(item);
+                    item.set('pending', false);
+                    view.pendingCounter --;
+                }
+            });
+            utils.dispatcher.trigger('rendered-pending.posts-view', this);
+        },
         addPost: function(post) {
-            var postView = this.insertPostView(post);
-            this.orderViews();
-            postView.render();
-            utils.dispatcher.trigger('add-all.posts-view', this);
+            console.log('add post ', post);
+            if ( this.flags.addPending ) {
+                post.set("pending", true);
+                this.pendingCounter ++;
+                utils.dispatcher.trigger('add-pending.posts-view', this);
+            } else {
+                var postView = this.insertPostView(post);
+                this.orderViews();
+                postView.render();
+                utils.dispatcher.trigger('add-all.posts-view', this);    
+            }
+            
         },
 
         removePost: function(post) {
@@ -158,6 +189,7 @@ define([
 
         // Create a new post view and insert it at the end of the views array
         insertPostView: function(post, options) {
+            console.log('insert post view');
             var opts = _.extend({model: post}, options);
             var postView = new PostView(opts);
             this.insertView('', postView);
@@ -200,6 +232,7 @@ define([
 
         // Insert post element in the parent list element at first position
         _insertPostViewAtFirstPos: function($parent, $el) {
+            console.log('insert at first position');
             // find the first post element and add it before it.
             var nextEl = $parent.children(this.postRootSel()).first();
             if (nextEl.length !== 0) {
