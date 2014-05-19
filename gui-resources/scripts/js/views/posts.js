@@ -40,7 +40,8 @@ define([
             this.setTemplate('themeBase/posts-list');
             if (utils.isClient) {
                 this.listenTo(this.collection, 'reset', this.setViewOnReset);
-                this.listenTo(this.collection, 'add', this.addPost);
+                //this.listenTo(this.collection, 'add', this.addPost);
+                this.listenTo(this.collection, 'add', this.checkPending);
                 this.listenTo(this.collection, 'remove', this.removePost);
                 this.listenTo(this.collection, 'change:Order', this.reorderPost);
                 this.listenTo(this.collection, 'change:DeletedOn', this.removePostFromCollection);
@@ -107,6 +108,7 @@ define([
                 this.collection.remove(post);
             }
         },
+        //count all the pending items
         countPending: function() {
             var tempCounter = 0;
             this.collection.each(function(item){
@@ -116,12 +118,12 @@ define([
             });
             return tempCounter;
         },
+        //render all the pending items
         renderPending: function() {
             var view = this;
-            console.log('render pending function');
+            //cycle through all the collection
             this.collection.each(function(item){
                 if (item.get('pending')) {
-                    console.log('rendering pending item ', item);
                     view.addPost(item);
                     item.set('pending', false);
                     view.pendingCounter --;
@@ -129,19 +131,22 @@ define([
             });
             utils.dispatcher.trigger('rendered-pending.posts-view', this);
         },
-        addPost: function(post) {
-            console.log('add post ', post);
-            if ( this.flags.addPending ) {
+        //check each post before rendering
+        checkPending: function(post) {
+            if (this.flags.addPending && post.get('updateItem')) {
+                //mark post as pending
                 post.set("pending", true);
                 this.pendingCounter ++;
                 utils.dispatcher.trigger('add-pending.posts-view', this);
             } else {
-                var postView = this.insertPostView(post);
-                this.orderViews();
-                postView.render();
-                utils.dispatcher.trigger('add-all.posts-view', this);    
+                this.addPost(post);
             }
-            
+        },
+        addPost: function(post) {
+            var postView = this.insertPostView(post);
+            this.orderViews();
+            postView.render();
+            utils.dispatcher.trigger('add-all.posts-view', this);    
         },
 
         removePost: function(post) {
@@ -189,7 +194,6 @@ define([
 
         // Create a new post view and insert it at the end of the views array
         insertPostView: function(post, options) {
-            console.log('insert post view');
             var opts = _.extend({model: post}, options);
             var postView = new PostView(opts);
             this.insertView('', postView);

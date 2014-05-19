@@ -55,6 +55,7 @@ define([
         },
 
         updateDataParse: function(data, options) {
+            
             if (data.lastCId) {
                 this.updateLastCId(parseInt(data.lastCId, 10));
             }
@@ -69,7 +70,10 @@ define([
                     return true;
                 });
             }
-
+            //mark each element from the result as an item that came from an update not a new page
+            _.each(data.PostList, function(item, index){
+                item.updateItem = true;
+            });
             return data.PostList;
         },
 
