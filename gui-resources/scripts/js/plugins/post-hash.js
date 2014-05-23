@@ -29,7 +29,7 @@ define([
                 if (href.indexOf(_hashMark) === -1) {
                     permalink = href + _hashMark + newHash;
                 } else if (href.indexOf(hash + '=') !== -1) {
-                    var regexHash = new RegExp(hash + '=[^&]*');
+                    var regexHash = new RegExp(hash + '=[^&#]*');
                     permalink = href.replace(regexHash, newHash);
                 } else {
                     permalink = href + '&' + newHash;
